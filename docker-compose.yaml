@@ -1,0 +1,28 @@
+services:
+  demo-app:
+    build: .
+    volumes:
+      - .:/src
+    ports:
+      - "8000:8000" # ホストマシンのポート8000をコンテナのポート8000にマッピング
+    environment:
+      - WATCHFILES_FORCE_POLLING=true #環境によってホットリロードの為に必要
+
+  db:
+    image: mysql:latest
+    platform: linux/x86_64 # M1 Macでの互換性のために追加
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # rootユーザーのパスワードを空に設定
+      MYSQL_DATABASE: "demo" # 初期データベース名を指定
+      TZ: "Asia/Tokyo" # タイムゾーンを日本に設定
+    volumes:
+      - mysql_data:/var/lib/mysql # データ永続化のためのボリューム
+
+    # 認証プラグインをmysql_native_passwordに設定
+    # 不具合によりcommand削除
+    #command: --default-authentication-plugin=mysql_native_password 
+    ports:
+      - "3306:3306" # ホストマシンのポート3306をコンテナのポート3306にマッピング
+
+volumes:
+  mysql_data: # MySQLのデータ永続化のためのボリューム

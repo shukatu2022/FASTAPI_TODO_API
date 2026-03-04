@@ -19,6 +19,11 @@ async def update_task(task_id: int, task_body: task_schema.TaskCreate):
     return task_schema.TaskCreateResponse(id=task_id, **task_body.model_dump())
 
 
-@router.delete("/tasks/{task_id}")
-async def delete_task():
+@router.put("/tasks/{task_id}/done", response_model=None)
+async def mark_task_as_done(task_id: int):
+    return
+
+
+@router.delete("/tasks/{task_id}/done", response_model=None)
+async def delete_task(task_id: int):
     pass
