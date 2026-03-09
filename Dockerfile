@@ -6,20 +6,14 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /src
 
-# Poetryインストール
-RUN pip install poetry
+# requirements.txt をコピー
+COPY requirements.txt .
 
-COPY pyproject.toml* poetry.lock* ./
-
-RUN poetry config virtualenvs.create false
-RUN poetry install
-
-# pipで依存ライブラリをインストール --> requirements.txtを使用する場合 
-# COPY requirements.txt ./
+# 依存ライブラリをインストール
 RUN pip install --no-cache-dir -r requirements.txt
 
 # ソースコードをコピー
 COPY . .
 
-# uvicornでFastAPIアプリを起動
-ENTRYPOINT ["poetry", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# FastAPI起動
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
