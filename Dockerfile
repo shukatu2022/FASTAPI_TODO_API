@@ -1,5 +1,5 @@
 # Python3.11公式イメージ
-FROM python:3.11-slim
+FROM python:3.11.16-slim
 
 # Pythonの出力を即座に表示
 ENV PYTHONUNBUFFERED=1
