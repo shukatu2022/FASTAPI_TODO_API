@@ -1,0 +1,19 @@
+FASTAPI_TODO_API
+├─ .dockervenv
+├─ api
+│   ├─ cruds
+│   │   └─ task.py
+│   ├─ models
+│   │   └─ task.py
+│   ├─ routers
+│   │   ├─ done.py
+│   │   └─ task.py
+│   ├─ schemas
+│   │   └─ task.py
+│   ├─ __init__.py
+│   ├─ db.py
+│   ├─ main.py
+│   └─ migrate_db.py
+├─ docker-compose.yaml
+├─ Dockerfile
+└─ requirements.txt

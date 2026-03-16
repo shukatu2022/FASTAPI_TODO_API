@@ -1,0 +1,90 @@
+ディレクトリ構成
+fastapi-project
+│
+├─ app
+│   └─ main.py
+│
+├─ pyproject.toml
+├─ poetry.lock
+├─ Dockerfile
+├─ .dockerignore
+└─ docker-compose.yml
+
+
+FastAPIコード
+app/main.py
+    from fastapi import FastAPI
+
+    app = FastAPI()
+
+    @app.get("/")
+    def read_root():
+        return {"message": "Hello FastAPI"}
+
+
+pyproject.toml
+
+    [tool.poetry]
+    name = "fastapi-project"
+    version = "0.1.0"
+    description = ""
+    authors = ["you"]
+
+    [tool.poetry.dependencies]
+    python = "^3.12"
+    fastapi = "^0.110.0"
+    uvicorn = {extras = ["standard"], version = "^0.29.0"}
+
+    [build-system]
+    requires = ["poetry-core"]
+    build-backend = "poetry.core.masonry.api"
+
+
+Dockerfile
+
+    FROM python:3.12-slim
+
+    WORKDIR /app
+
+    # Poetry install
+    RUN pip install poetry
+
+    # 仮想環境を作らない（Docker内なので）
+    RUN poetry config virtualenvs.create false
+
+    # 依存だけ先にコピー（キャッシュ最適化）
+    COPY pyproject.toml poetry.lock* ./
+
+    RUN poetry install --no-root
+
+    # アプリコードコピー
+    COPY ./app ./app
+
+    CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+.dockerignore
+    __pycache__
+    *.pyc
+    *.pyo
+    *.pyd
+    .env
+    .git
+    .gitignore
+
+
+docker-compose.yaml(開発用)
+
+    version: "3.9"
+
+    services:
+    api:
+        build: .
+        ports:
+        - "8000:8000"
+        volumes:
+        - .:/app
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+
+
