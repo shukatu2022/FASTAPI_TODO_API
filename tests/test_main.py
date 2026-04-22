@@ -1,6 +1,7 @@
 import pytest
 import pytest_asyncio
 import starlette.status
+from typing import AsyncGenerator
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -12,7 +13,7 @@ ASYNC_DB_URL = "sqlite+aiosqlite:///:memory:"
 
 
 @pytest_asyncio.fixture
-async def async_client() -> AsyncClient:
+async def async_client() -> AsyncGenerator[AsyncClient, None]:
     # 非同期対応したDB接続用のengineとsessionを作成
     async_engine = create_async_engine(ASYNC_DB_URL, echo=True)
     async_session = sessionmaker(
@@ -68,17 +69,27 @@ async def test_done_flag(async_client):
     assert response_obj["title"] == "Test Task 2"
 
     # 完了フラグを立てる
-    response = await async_client.put("/tasks/1/done")
+    task_id = response.json()["id"]
+    response = await async_client.put("/tasks/{task_id}/done")
     assert response.status_code == starlette.status.HTTP_200_OK
 
     # 既に完了フラグが立っているので400を返す
-    response = await async_client.put("/tasks/1/done")
+    response = await async_client.put("/tasks/{task_id}/done")
     assert response.status_code == starlette.status.HTTP_400_BAD_REQUEST
 
     # 完了フラグを外す
-    response = await async_client.delete("/tasks/1/done")
+    response = await async_client.delete("/tasks/{task_id}/done")
     assert response.status_code == starlette.status.HTTP_200_OK
 
     # 既に完了フラグが外れているので404を返す
-    response = await async_client.delete("/tasks/1/done")
+    response = await async_client.delete("/tasks/{task_id}/done")
     assert response.status_code == starlette.status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+async def test_due_date(async_client):
+    response = await async_client.post(
+        "/tasks",
+        json={"title": "Test Task", "due_date": "2026-04-01"},
+        )
+    assert response.status_code == starlette.status.HTTP_200_OK
