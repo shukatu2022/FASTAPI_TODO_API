@@ -1,72 +1,21 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TODO List</title>
-    <script>
-        let tasks = [];
-
-        async function fetchTasks() {
-            const response = await fetch('/tasks');
-            tasks = await response.json();
-            renderTasks();
-        }
-
-        async function addTask(event) {
-            event.preventDefault();
-            const taskInput = document.getElementById('task-input');
-            const task = { name: taskInput.value, done: false };
-            await fetch('/tasks', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(task)
-            });
-            taskInput.value = '';
-            fetchTasks();
-        }
-
-        async function toggleTaskDone(taskId) {
-            await fetch(`/tasks/${taskId}/done`, { method: 'PUT' });
-            fetchTasks();
-        }
-
-        async function deleteTask(taskId) {
-            await fetch(`/tasks/${taskId}/done`, { method: 'DELETE' });
-            fetchTasks();
-        }
-
-        function renderTasks() {
-            const taskList = document.getElementById('task-list');
-            taskList.innerHTML = '';
-            tasks.forEach(task => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone(${task.id})">
-                    ${task.name} <button onclick="deleteTask(${task.id})">Delete</button>
-                `;
-                taskList.appendChild(listItem);
-            });
-        }
-
-        window.onload = fetchTasks;
-    </script>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>TODO List</h1>
-    <ul class="todo-list">
-        <li class="todo-item">
-            <input type="checkbox" id="task1">
-            <label for="task1">Task 1 - Description: Complete the project documentation. Due: 2026-04-01</label>
-        </li>
-        <li class="todo-item">
-            <input type="checkbox" id="task2">
-            <label for="task2">Task 2 - Description: Fix bugs in the application. Due: 2026-04-05</label>
-        </li>
-        <li class="todo-item">
-            <input type="checkbox" id="task3">
-            <label for="task3">Task 3 - Description: Review pull requests. Due: 2026-04-10</label>
-        </li>
-    </ul>
+    <div class="todo-container">
+        <h1>TODO List</h1>
+        <form id="task-form">
+            <input type="text" id="task-input" placeholder="新しいタスクを入力" required>
+            <button type="submit" class="button">追加</button>
+        </form>
+        <ul id="task-list"></ul>
+    </div>
+    <script src="/static/app.js"></script>
 </body>
 </html>
