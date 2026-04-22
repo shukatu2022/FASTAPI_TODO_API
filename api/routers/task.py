@@ -34,22 +34,10 @@ async def update_task(
     return await task_crud.update_task(db, task_body, original=task)
 
 
-# @router.put("/tasks/{task_id}/done", response_model=None)
-# async def mark_task_as_done(
-#       task_id: int,
-#       db: AsyncSession = Depends(get_db),
-#       ):
-#     task = await task_crud.get_task(db, task_id=task_id)
-#     if task is None:
-#         raise HTTPException(status_code=404, detail="Task not found")
-#     # Implementation for marking task as done would go here
-#     return
+@router.delete("/{task_id}", response_model=None)
+async def delete_task(task_id: int, db: AsyncSession = Depends(get_db)):
+    task = await task_crud.get_task(db, task_id=task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
 
-
-# @router.delete("/tasks/{task_id}/done", response_model=None)
-# async def delete_task(task_id: int, db: AsyncSession = Depends(get_db)):
-#     task = await task_crud.get_task(db, task_id=task_id)
-#     if task is None:
-#         raise HTTPException(status_code=404, detail="Task not found")
-#     # Implementation for deleting task would go here
-#     return
+    return await task_crud.delete_task(db, original=task)
