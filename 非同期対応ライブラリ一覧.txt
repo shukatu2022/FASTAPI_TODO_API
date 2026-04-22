@@ -1,0 +1,56 @@
+🟢 HTTPクライアント
+ライブラリ	             非同期対応	          コメント
+httpx.AsyncClient	       ✅	     requests の非同期版。FastAPIやasyncioで安全
+aiohttp.ClientSession	   ✅	     老舗非同期HTTPライブラリ
+requests	               ❌	     同期のみ。async関数内で使うと全体ブロック
+urllib / urllib3	       ❌	     同期のみ
+
+🟢 DBアクセス（ORM / Queryビルダー）
+SQLAlchemy
+ライブラリ	                    非同期対応	        コメント
+SQLAlchemy 1.4+ + asyncio	      ✅	        AsyncSession を使う
+databases	                      ✅	        シンプルな非同期DBラッパー
+SQLModel	                      ✅	        SQLAlchemyベースでasync対応可能
+psycopg2	                      ❌	        同期PostgreSQLドライバ
+asyncpg	                          ✅	        PostgreSQL専用の非同期ドライバ（推奨）
+pymysql	                          ❌	        同期MySQLドライバ
+aiomysql	                      ✅	        MySQLの非同期版
+
+🟢 ファイル I/O
+ライブラリ	       非同期対応	       コメント
+aiofiles	         ✅	        ファイル読み書き用asyncライブラリ
+built-in open()	     ❌	        同期。async関数内で使うとブロック
+
+🟢 タイマー / sleep
+ライブラリ	       非同期対応	       コメント
+asyncio.sleep()	     ✅	        待機用。CPUをブロックしない
+time.sleep()	     ❌	        ブロックするのでasync内ではNG
+
+🟢 タスク管理 / 並列処理
+ライブラリ	                     非同期対応	         コメント
+asyncio.create_task()	           ✅	      非同期タスクを生成する
+asyncio.gather()	               ✅	      複数コルーチンを並列実行
+threading / multiprocessing	    ❌ / ✅	    CPUバウンドはスレッド・プロセスを使う（asyncとは別）
+
+
+🟢 まとめ（安全な組み合わせ例）
+import httpx
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+import asyncio
+import aiofiles
+
+# 非同期HTTP
+async with httpx.AsyncClient() as client:
+    r = await client.get("https://example.com")
+
+# 非同期DB
+async_engine = create_async_engine("postgresql+asyncpg://...")
+async with AsyncSession(async_engine) as session:
+    result = await session.execute(...)
+
+# 非同期ファイル
+async with aiofiles.open("data.txt") as f:
+    content = await f.read()
+
+# 非同期待機
+await asyncio.sleep(1)
