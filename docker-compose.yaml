@@ -8,6 +8,7 @@ services:
       - "8000:8000" # ホストマシンのポート8000をコンテナのポート8000にマッピング
     environment:
       - WATCHFILES_FORCE_POLLING=true #環境によってホットリロードの為に必要
+      - PYTHONPATH=/src
 
   db:
     image: mysql:latest
