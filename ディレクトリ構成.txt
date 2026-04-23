@@ -4,6 +4,7 @@ FASTAPI_TODO_API
 │   ├─ cruds
 │   │   └─ task.py
 │   ├─ models
+|   |   ├─ __init__.py
 │   │   └─ task.py
 │   ├─ routers
 │   │   ├─ done.py
