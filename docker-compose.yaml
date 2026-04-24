@@ -9,22 +9,50 @@ services:
     environment:
       - WATCHFILES_FORCE_POLLING=true #環境によってホットリロードの為に必要
       - PYTHONPATH=/src
+      - DATABASE_URL=postgresql+asyncpg:\
+          //hebnQwY:<password>@rllcbdcytocc.db.dbaas.dev:30635/eHiZwe
+    depends_on:
+      db:
+        condition: service_healthy
 
-  db:
-    image: mysql:latest
-    platform: linux/x86_64 # M1 Macでの互換性のために追加
+# DBaaS.dev(PostgreSQL) を使用
+db:
+    image: postgres:15
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # rootユーザーのパスワードを空に設定
-      MYSQL_DATABASE: "demo" # 初期データベース名を指定
-      TZ: "Asia/Tokyo" # タイムゾーンを日本に設定
+      POSTGRES_USER: demo_user
+      POSTGRES_PASSWORD: demo_pass
+      POSTGRES_DB: demo
+      TZ: Asia/Tokyo # タイムゾーンを日本に設定
     volumes:
-      - mysql_data:/var/lib/mysql # データ永続化のためのボリューム
-
-    # 認証プラグインをmysql_native_passwordに設定
-    # 不具合によりcommand削除
-    #command: --default-authentication-plugin=mysql_native_password 
+      - postgres_data:/var/lib/postgresql/data # データ永続化のためのボリューム
     ports:
-      - "3306:3306" # ホストマシンのポート3306をコンテナのポート3306にマッピング
-
+      - "5432:5432" # ホストマシンのポート5432をコンテナのポート5432にマッピング
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo_user -d demo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+ 
 volumes:
-  mysql_data: # MySQLのデータ永続化のためのボリューム
+  postgres_data: # PostgreSQLのデータ永続化のためのボリューム
+
+
+# 以下は MySQL を使用する場合の設定例 --- IGNORE ---
+#   db:
+#     image: mysql:latest
+#     platform: linux/x86_64 # M1 Macでの互換性のために追加
+#     environment:
+#       MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # rootユーザーのパスワードを空に設定
+#       MYSQL_DATABASE: "demo" # 初期データベース名を指定
+#       TZ: "Asia/Tokyo" # タイムゾーンを日本に設定
+#     volumes:
+#       - mysql_data:/var/lib/mysql # データ永続化のためのボリューム
+
+#     # 認証プラグインをmysql_native_passwordに設定
+#     # 不具合によりcommand削除
+#     #command: --default-authentication-plugin=mysql_native_password 
+#     ports:
+#       - "3306:3306" # ホストマシンのポート3306をコンテナのポート3306にマッピング
+
+# volumes:
+#   mysql_data: # MySQLのデータ永続化のためのボリューム
