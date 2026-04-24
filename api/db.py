@@ -2,15 +2,21 @@ import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-ASYNC_DB_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./demo.db")
+
+# 以下は mysql 用
+# DBaaS.dev を使用
+ASYNC_DB_URL = os.getenv(
+    "DATABASE_URL",
+    "mysql+aiomysql://root@db:3306/demo?charset=utf8",
+    )
 
 async_engine = create_async_engine(ASYNC_DB_URL, echo=True)
 async_session = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=async_engine,
-    class_=AsyncSession,
-)
+                    autocommit=False,
+                    autoflush=False,
+                    bind=async_engine,
+                    class_=AsyncSession,
+                    )
 
 Base = declarative_base()
 
@@ -20,16 +26,16 @@ async def get_db():
         yield session
 
 
-# 以下は mysql 用
-# ASYNC_DB_URL = "mysql+aiomysql://root@db:3306/demo?charset=utf8"
+# SQLite用
+# ASYNC_DB_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./demo.db")
 
 # async_engine = create_async_engine(ASYNC_DB_URL, echo=True)
 # async_session = sessionmaker(
-#                     autocommit=False,
-#                     autoflush=False,
-#                     bind=async_engine,
-#                     class_=AsyncSession,
-#                     )
+#     autocommit=False,
+#     autoflush=False,
+#     bind=async_engine,
+#     class_=AsyncSession,
+# )
 
 # Base = declarative_base()
 
