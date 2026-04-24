@@ -22,5 +22,5 @@ RUN poetry install --no-root
 # ソースコードをコピー
 COPY . .
 
-# FastAPI起動
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
+# $PORT が未設定なら 8000 を使用（Render は $PORT を自動設定）
+CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
