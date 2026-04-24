@@ -1,8 +1,9 @@
+import os
 import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
 from api.models.task import Base
 
-ASYNC_DB_URL = "sqlite+aiosqlite:///./demo.db"
+ASYNC_DB_URL = os.environ["DATABASE_URL"]
 engine = create_async_engine(ASYNC_DB_URL, echo=True)
 
 
