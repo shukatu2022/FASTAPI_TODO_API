@@ -4,11 +4,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 
 # DBaaS.dev(PostgreSQL) を使用
-ASYNC_DB_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+asyncpg:\
-        //hebnQwY:<password>@rllcbdcytocc.db.dbaas.dev:30635/eHiZwe",
-    )
+ASYNC_DB_URL = os.environ["DATABASE_URL"]
 
 async_engine = create_async_engine(ASYNC_DB_URL, echo=True)
 async_session = sessionmaker(
