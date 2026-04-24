@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: fastapi-todo-api
+    runtime: python
+    buildCommand: poetry install --no-root
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+    preDeployCommand: python -m api.migrate_db
