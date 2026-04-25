@@ -1,0 +1,54 @@
+response_model　とは？
+
+    api/routers/task.py
+    @router.put("/{task_id}", response_model=task_schema.TaskCreateRespnse)
+    async def update_task():
+        ~
+        return ~
+
+    response_model: 返り値をこの形に強制するフィルター兼コンバーター
+                    class TaskCreateRespnse:
+                            id: ind
+                            title: str
+                    だとしたら
+                    DBモデルが
+                    Task(
+                        id=1,
+                        title="hoge"
+                        due_date="2026-01-01", <-- スキーマにない
+                    )
+                    なら
+                    レスポンスは
+                    json{
+                        "id": 1,
+                        "title": "hoge",
+                    }
+                    に変換される
+
+
+Depends とは？
+
+    api/routers/task.py
+    @router.post("", response_model=task_schema.TaskCreateResponse)
+    async def create_task(task_body: task_schema.TaskCreate,
+                        db: AsyncSession = Depends(get_db)):
+        return await task_crud.create_task(db, task_body)
+
+
+    api/db.py
+    async def get_db():
+    async with async_session() as session:
+        yield session
+
+
+    Depends の本質
+
+    generator（yield関数）を「2回実行」している
+    最初 → 値を取り出す（yieldまで）
+    最後 → 後処理を実行（yieldの続き）
+
+    エンドポイントに db を実行させたままでは、 get_db() の db はまだ閉じられていない
+    つまり、yield で止まったまま。
+    yield の続きを再開させないと with によって close されない
+
+    Depends は止まった yield をエンドポイントが実行された段階で自動的に再開させる
