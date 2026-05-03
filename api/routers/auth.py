@@ -21,6 +21,9 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     """ユーザー登録エンドポイント"""
     try:
+        # パスワード長検証
+        user.validate_password()
+
         # メールアドレスの重複チェック
         existing_user = await get_user_by_email(db, email=user.email)
         if existing_user:
@@ -50,6 +53,13 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
             "token_type": "bearer",
             "user": UserResponse.from_orm(db_user),
         }
+    except HTTPException:
+        raise
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -61,6 +71,9 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
 async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     """ログインエンドポイント"""
     try:
+        # パスワード長検証
+        user.validate_password()
+
         # ユーザーを取得
         db_user = await get_user_by_email(db, email=user.email)
 
@@ -86,6 +99,11 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
         }
     except HTTPException:
         raise
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
