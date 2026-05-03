@@ -6,11 +6,29 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
+    def validate_password(self) -> bool:
+        """bcryptの72バイト制限に対応"""
+        if len(self.password.encode('utf-8')) > 72:
+            raise ValueError(
+                "Password must be 72 bytes or less. "
+                "Please use a shorter password."
+            )
+        return True
+
 
 class UserLogin(BaseModel):
     """ログイン時のリクエストスキーマ"""
     email: EmailStr
     password: str
+
+    def validate_password(self) -> bool:
+        """bcryptの72バイト制限に対応"""
+        if len(self.password.encode('utf-8')) > 72:
+            raise ValueError(
+                "Password must be 72 bytes or less. "
+                "Please use a shorter password."
+            )
+        return True
 
 
 class UserResponse(BaseModel):
