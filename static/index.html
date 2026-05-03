@@ -8,8 +8,37 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="todo-container">
-        <h1>TODO List</h1>
+    <div class="auth-container" id="auth-container">
+        <h1>ログイン</h1>
+        <form id="login-form">
+            <input type="email" id="login-email" placeholder="メールアドレス" required>
+            <input type="password" id="login-password" placeholder="パスワード" required>
+            <button type="submit" class="button">ログイン</button>
+        </form>
+        <div class="switch-area">
+            <span>まだアカウントをお持ちでないですか？</span>
+            <button id="show-register" class="link-button" type="button">アカウント登録</button>
+        </div>
+
+        <form id="register-form" class="hidden">
+            <input type="email" id="register-email" placeholder="メールアドレス" required>
+            <input type="password" id="register-password" placeholder="パスワード" required>
+            <button type="submit" class="button">登録してログイン</button>
+            <button id="cancel-register" class="button outline" type="button">キャンセル</button>
+        </form>
+
+        <p id="auth-message" class="message"></p>
+    </div>
+
+    <div class="todo-container" id="todo-section">
+        <div class="top-row">
+            <div>
+                <h1>TODO List</h1>
+                <p id="user-email"></p>
+                <p id="save-info" class="message"></p>
+            </div>
+            <button id="logout-button" class="button outline" type="button">ログアウト</button>
+        </div>
         <form id="task-form">
             <input type="text" id="task-input" placeholder="新しいタスクを入力" required>
             <button type="submit" class="button">追加</button>
