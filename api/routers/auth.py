@@ -21,9 +21,6 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     """ユーザー登録エンドポイント"""
     try:
-        # パスワード長検証
-        user.validate_password()
-
         # メールアドレスの重複チェック
         existing_user = await get_user_by_email(db, email=user.email)
         if existing_user:
@@ -71,9 +68,6 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
 async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     """ログインエンドポイント"""
     try:
-        # パスワード長検証
-        user.validate_password()
-
         # ユーザーを取得
         db_user = await get_user_by_email(db, email=user.email)
 
