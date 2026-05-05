@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 
 
 class UserCreate(BaseModel):
@@ -6,14 +6,16 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
-    def validate_password(self) -> bool:
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, v: str) -> str:
         """bcryptの72バイト制限に対応"""
-        if len(self.password.encode('utf-8')) > 72:
+        if len(v.encode('utf-8')) > 72:
             raise ValueError(
                 "Password must be 72 bytes or less. "
                 "Please use a shorter password."
             )
-        return True
+        return v
 
 
 class UserLogin(BaseModel):
@@ -21,14 +23,16 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-    def validate_password(self) -> bool:
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, v: str) -> str:
         """bcryptの72バイト制限に対応"""
-        if len(self.password.encode('utf-8')) > 72:
+        if len(v.encode('utf-8')) > 72:
             raise ValueError(
                 "Password must be 72 bytes or less. "
                 "Please use a shorter password."
             )
-        return True
+        return v
 
 
 class UserResponse(BaseModel):
